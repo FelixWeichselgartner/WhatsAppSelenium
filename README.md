@@ -10,7 +10,6 @@ I'm not affiliated or authorized by Meta/Facebook/WhatsApp. Use this at your own
 
 ## Usage
 
-Setup:
 * [Download](https://github.com/mozilla/geckodriver/releases) geckodriver for your platform.
 * Unpack geckodriver in this directory.
 * Locate your profile path with firefox (this saves your WhatsApp Web session).
