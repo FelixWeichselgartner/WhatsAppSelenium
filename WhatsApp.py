@@ -133,9 +133,10 @@ class WhatsApp:
                 break
         l = list(filter(lambda x: x != '', message.split('\n')))
         
+        action = ActionChains(self.web)
         for line in l:
             cb.send_keys(line)
-            action = ActionChains(self.web)
             action.key_down(Keys.SHIFT).key_down(Keys.ENTER).key_up(Keys.SHIFT).key_up(Keys.ENTER).perform()
         cb.send_keys('\n')
+        cb.send_keys(Keys.RETURN)
         return True
