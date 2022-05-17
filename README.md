@@ -25,4 +25,4 @@ I'm not affiliated or authorized by Meta/Facebook/WhatsApp. Use this at your own
 
 ## License
 
-GNU General Public License Version 3, see [License](./License.md)
+GNU Lesser General Public License Version 3, see [License](./License.md)
