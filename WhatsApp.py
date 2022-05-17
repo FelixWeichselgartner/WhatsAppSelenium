@@ -43,6 +43,8 @@ class WhatsApp:
         :return:
         """
 
+        sleep(10)
+
         print('closing whatsapp')
 
         if 'web' in self.__dict__ and self.web != None:
@@ -139,4 +141,6 @@ class WhatsApp:
             action.key_down(Keys.SHIFT).key_down(Keys.ENTER).key_up(Keys.SHIFT).key_up(Keys.ENTER).perform()
         cb.send_keys('\n')
         cb.send_keys(Keys.RETURN)
+
+        sleep(0.5)
         return True
