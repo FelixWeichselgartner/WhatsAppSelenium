@@ -59,10 +59,8 @@ class WhatsApp:
         :return: the search bar.
         """
 
-        # <input type="text" class="_2zCfw copyable-text selectable-text" data-tab="2" dir="auto" title="Suchen oder neuen Chat beginnen" value>
-        # xpath: 
-        try:
-            ret = self.web.find_element_by_xpath("""/html/body/div[1]/div/div/div[3]/div/div[1]/div/label/div/div[2]""")
+        try:                                   
+            ret = self.web.find_element_by_xpath("""/html/body/div[1]/div/div/div[3]/div/div[1]/div/div/div[2]/div/div[2]""")
         except selenium.common.exceptions.NoSuchElementException:
             ret = None
         return ret
