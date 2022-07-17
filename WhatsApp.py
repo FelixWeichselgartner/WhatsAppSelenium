@@ -59,7 +59,7 @@ class WhatsApp:
         :return: the search bar.
         """
 
-        try:                                   
+        try:          
             ret = self.web.find_element_by_xpath("""/html/body/div[1]/div/div/div[3]/div/div[1]/div/div/div[2]/div/div[2]""")
         except selenium.common.exceptions.NoSuchElementException:
             ret = None
@@ -84,7 +84,8 @@ class WhatsApp:
         # <div class="wjdTm" style="visibility: visible;">Schreib eine Nachricht</div>
         # xpath:
         try:
-            ret = self.web.find_element_by_xpath("""/html/body/div[1]/div[1]/div[1]/div[4]/div[1]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[2]""")                               
+            ret = self.web.find_element_by_xpath("""/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[1]""")          
+            #ret = self.web.find_element_by_xpath("""/html/body/div[1]/div[1]/div[1]/div[4]/div[1]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[2]""")                                                    
         except selenium.common.exceptions.NoSuchElementException:
             ret = None
         return ret
@@ -134,8 +135,10 @@ class WhatsApp:
         l = list(filter(lambda x: x != '', message.split('\n')))
         
         action = ActionChains(self.web)
+        cb.click()
         for line in l:
-            cb.send_keys(line)
+            for c in line:
+                cb.send_keys(c)
             action.key_down(Keys.SHIFT).key_down(Keys.ENTER).key_up(Keys.SHIFT).key_up(Keys.ENTER).perform()
         cb.send_keys('\n')
         cb.send_keys(Keys.RETURN)
