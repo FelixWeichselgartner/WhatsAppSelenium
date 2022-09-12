@@ -60,7 +60,7 @@ class WhatsApp:
         """
 
         try:          
-            ret = self.web.find_element_by_xpath("""/html/body/div[1]/div/div/div[3]/div/div[1]/div/div/div[2]/div/div[2]""")
+            ret = self.web.find_element("xpath", """/html/body/div[1]/div/div/div[3]/div/div[1]/div/div/div[2]/div/div[2]""")
         except selenium.common.exceptions.NoSuchElementException:
             ret = None
         return ret
@@ -84,7 +84,7 @@ class WhatsApp:
         # <div class="wjdTm" style="visibility: visible;">Schreib eine Nachricht</div>
         # xpath:
         try:
-            ret = self.web.find_element_by_xpath("""/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[1]""")          
+            ret = self.web.find_element("xpath", """/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[1]""")          
             #ret = self.web.find_element_by_xpath("""/html/body/div[1]/div[1]/div[1]/div[4]/div[1]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[2]""")                                                    
         except selenium.common.exceptions.NoSuchElementException:
             ret = None
@@ -95,7 +95,7 @@ class WhatsApp:
 
         for i in range(15):
             try:
-                obj = self.web.find_element_by_xpath(f"/html/body/div[1]/div/div/div[3]/div/div[2]/div[1]/div/div/div[{i}]")
+                obj = self.web.find_element("xpath", f"/html/body/div[1]/div/div/div[3]/div/div[2]/div[1]/div/div/div[{i}]")
             except selenium.common.exceptions.NoSuchElementException:
                 continue
             if 'transform: translateY(72px)' in obj.get_attribute('style'):
@@ -121,10 +121,11 @@ class WhatsApp:
         except selenium.common.exceptions.ElementNotInteractableException:
             pass
         sb.send_keys(phone_number)
+        sleep(2)
 
         if self.contact_available():
             sb.send_keys('\n')
-            print('available')
+            logging.info(f'sending message to {phone_number}')
         else:
             return False
 
