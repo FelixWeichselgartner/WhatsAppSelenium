@@ -4,6 +4,7 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
+from selenium.webdriver.firefox.service import Service
 
 import logging
 from selenium.webdriver.remote.remote_connection import LOGGER
@@ -30,9 +31,10 @@ class WhatsApp:
         self._profile_path = firefox_path
         self._LOCAL_STORAGE_FILE = 'localStorage.json'
         self.options = Options()
+        service = Service(executable_path=gecko_path)
         self._profile = webdriver.FirefoxProfile(profile_directory=self._profile_path)
         self.options.profile = self._profile
-        self.web = webdriver.Firefox(executable_path=gecko_path, options=self.options)
+        self.web = webdriver.Firefox(service=service, options=self.options)
         # self.web.minimize_window()
         self.web.get('https://web.whatsapp.com/')
         self.wait_login()
