@@ -1,3 +1,4 @@
+import platform
 import selenium
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
@@ -31,6 +32,8 @@ class WhatsApp:
         self._profile_path = firefox_path
         self._LOCAL_STORAGE_FILE = 'localStorage.json'
         self.options = Options()
+        if platform.system() == 'Windows':
+            self.options.binary_location = r"C:/Program Files/Mozilla Firefox/firefox.exe"
         service = Service(executable_path=gecko_path)
         self._profile = webdriver.FirefoxProfile(profile_directory=self._profile_path)
         self.options.profile = self._profile
