@@ -3,10 +3,9 @@ from WhatsApp import WhatsApp
 
 
 firefox_profile_path = 'some path'
-gecko_path = 'some path'
 
     
-whatsapp = WhatsApp(firefox_profile_path, gecko_path)
+whatsapp = WhatsApp(firefox_profile_path)
 
 while True:
     try:
