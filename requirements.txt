@@ -1,9 +1,2 @@
-pymysql
-validate_email
-vobject
-PySide2
 selenium
-pandas
-requests
-xlsxwriter
-markdown
+webdriver-manager

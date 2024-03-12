@@ -4,12 +4,13 @@ from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.firefox.service import Service
+from webdriver_manager.firefox import GeckoDriverManager
+from selenium.common.exceptions import WebDriverException
 
 import logging
 from selenium.webdriver.remote.remote_connection import LOGGER
-LOGGER.setLevel(logging.WARNING)
+logging.basicConfig(level=logging.INFO)
 
 from time import sleep
 
@@ -19,7 +20,7 @@ class WhatsApp:
     class for sending whatsapp messages via whatsapp web.
     """
 
-    def __init__(self, firefox_path, gecko_path):
+    def __init__(self, firefox_path):
         """
         determine firefox path:
         - open firefox
@@ -29,17 +30,27 @@ class WhatsApp:
         - Profile directory
         """
 
-        self._profile_path = firefox_path
-        self._LOCAL_STORAGE_FILE = 'localStorage.json'
-        self.options = Options()
+        options = Options()
         if platform.system() == 'Windows':
-            self.options.binary_location = r"C:/Program Files/Mozilla Firefox/firefox.exe"
-        service = Service(executable_path=gecko_path)
-        self._profile = webdriver.FirefoxProfile(profile_directory=self._profile_path)
-        self.options.profile = self._profile
-        self.web = webdriver.Firefox(service=service, options=self.options)
-        # self.web.minimize_window()
-        self.web.get('https://web.whatsapp.com/')
+            options.binary_location = r"C:/Program Files/Mozilla Firefox/firefox.exe"
+        elif platform.system() == 'Linux':
+            options.binary_location = "/usr/lib64/firefox/firefox"
+        else:
+            print('Your system is not supported by WhatsAppSelenium')
+        print(firefox_path)
+        options.profile = webdriver.FirefoxProfile(profile_directory=firefox_path)
+
+        # Setup the driver with automatic geckodriver management
+        service = Service(executable_path=GeckoDriverManager().install())
+        #service = Service(executable_path=gecko_path)
+        try:
+            self.driver = webdriver.Firefox(service=service, options=options)
+        except WebDriverException as e:
+            LOGGER.error(e)
+            LOGGER.error('Did you start from vscode? Try to start from Terminal.')
+            exit(127)
+        # self.driver.minimize_window()
+        self.driver.get('https://web.whatsapp.com/')
         self.wait_login()
 
     def __del__(self):
@@ -48,15 +59,13 @@ class WhatsApp:
         :return:
         """
 
-        sleep(10)
+        sleep(1)
 
         print('closing whatsapp')
 
-        if 'web' in self.__dict__ and self.web != None:
-            self.web.quit()
-            self.web = None
-        else:
-            print('##################################')
+        if 'web' in self.__dict__ and self.driver != None:
+            self.driver.quit()
+            self.driver = None
 
     def search_bar(self):
         """
@@ -65,7 +74,7 @@ class WhatsApp:
         """
 
         try:
-            ret = self.web.find_element("xpath", """/html/body/div[1]/div/div[2]/div[3]/div/div[1]/div/div[2]/div[2]/div/div[1]""")
+            ret = self.driver.find_element("xpath", """/html/body/div[1]/div/div[2]/div[3]/div/div[1]/div/div[2]/div[2]/div/div""")
         except selenium.common.exceptions.NoSuchElementException:
             ret = None
         return ret
@@ -88,8 +97,8 @@ class WhatsApp:
 
         # <div class="wjdTm" style="visibility: visible;">Schreib eine Nachricht</div>
         # xpath:
-        try:                                        
-            ret = self.web.find_element("xpath", """/html/body/div[1]/div/div[2]/div[4]/div/footer/div[1]/div/span[2]/div/div[2]/div[1]/div[2]/div[1]""")            #ret = self.web.find_element_by_xpath("""/html/body/div[1]/div[1]/div[1]/div[4]/div[1]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[2]""")                                                    
+        try:#                                       /html/body/div[1]/div/div[2]/div[4]/div/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[1]
+            ret = self.driver.find_element("xpath", """/html/body/div[1]/div/div[2]/div[4]/div/footer/div[1]/div/span[2]/div/div[2]/div[1]/div[2]/div[1]""")            #ret = self.driver.find_element_by_xpath("""/html/body/div[1]/div[1]/div[1]/div[4]/div[1]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[2]""")                                                    
         except selenium.common.exceptions.NoSuchElementException:
             ret = None
         return ret
@@ -99,7 +108,7 @@ class WhatsApp:
 
         for i in range(15):
             try:
-                obj = self.web.find_element("xpath", f"/html/body/div[1]/div/div[2]/div[3]/div/div[2]/div[1]/div/div/div[{i}]")
+                obj = self.driver.find_element("xpath", f"/html/body/div[1]/div/div[2]/div[3]/div/div[2]/div[1]/div/div/div[{i}]")
             except selenium.common.exceptions.NoSuchElementException:
                 continue
             if 'transform: translateY(72px)' in obj.get_attribute('style'):
@@ -116,12 +125,13 @@ class WhatsApp:
                  False if not send.
         """
 
-        action = ActionChains(self.web)
+        action = ActionChains(self.driver)
 
         while True:
             sb = self.search_bar()
             if sb is not None:
                 break
+        sb.click()
         try:
             sb.clear()
             for i in range(50):
