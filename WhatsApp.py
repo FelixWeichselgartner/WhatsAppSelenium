@@ -97,8 +97,8 @@ class WhatsApp:
 
         # <div class="wjdTm" style="visibility: visible;">Schreib eine Nachricht</div>
         # xpath:
-        try:#                                       /html/body/div[1]/div/div[2]/div[4]/div/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[1]
-            ret = self.driver.find_element("xpath", """/html/body/div[1]/div/div[2]/div[4]/div/footer/div[1]/div/span[2]/div/div[2]/div[1]/div[2]/div[1]""")            #ret = self.driver.find_element_by_xpath("""/html/body/div[1]/div[1]/div[1]/div[4]/div[1]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[2]""")                                                    
+        try:
+            ret = self.driver.find_element("xpath", """/html/body/div[1]/div/div[2]/div[4]/div/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[1]""")
         except selenium.common.exceptions.NoSuchElementException:
             ret = None
         return ret
