@@ -15,6 +15,11 @@ logging.basicConfig(level=logging.INFO)
 from time import sleep
 
 
+XPATH_search_bar = """/html/body/div[1]/div/div/div[2]/div[3]/div/div[1]/div/div[2]/div[2]/div/div[1]"""      
+XPATH_chat_box   = """/html/body/div[1]/div/div/div[2]/div[4]/div/footer/div[1]/div/span[2]/div/div[2]/div[1]/div[2]/div[1]"""
+XPATH_contact    = """/html/body/div[1]/div/div/div[2]/div[3]/div/div[2]/div[1]/div/div/div"""
+
+
 class WhatsApp:
     """
     class for sending whatsapp messages via whatsapp web.
@@ -74,7 +79,7 @@ class WhatsApp:
         """
 
         try:
-            ret = self.driver.find_element("xpath", """/html/body/div[1]/div/div[2]/div[3]/div/div[1]/div/div[2]/div[2]/div/div""")
+            ret = self.driver.find_element("xpath", XPATH_search_bar)
         except selenium.common.exceptions.NoSuchElementException:
             ret = None
         return ret
@@ -98,7 +103,7 @@ class WhatsApp:
         # <div class="wjdTm" style="visibility: visible;">Schreib eine Nachricht</div>
         # xpath:
         try:
-            ret = self.driver.find_element("xpath", """/html/body/div[1]/div/div[2]/div[4]/div/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[1]""")
+            ret = self.driver.find_element("xpath", XPATH_chat_box)
         except selenium.common.exceptions.NoSuchElementException:
             ret = None
         return ret
@@ -108,7 +113,7 @@ class WhatsApp:
 
         for i in range(15):
             try:
-                obj = self.driver.find_element("xpath", f"/html/body/div[1]/div/div[2]/div[3]/div/div[2]/div[1]/div/div/div[{i}]")
+                obj = self.driver.find_element("xpath", XPATH_contact + f"[{i}]")
             except selenium.common.exceptions.NoSuchElementException:
                 continue
             if 'transform: translateY(72px)' in obj.get_attribute('style'):
