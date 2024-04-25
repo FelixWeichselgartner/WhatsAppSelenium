@@ -12,8 +12,6 @@ At the moment WhatsApp-Messages sent over the automated WhatsApp-Web-Python-Scri
 
 ## Usage
 
-* [Download](https://github.com/mozilla/geckodriver/releases) geckodriver for your platform.
-* Unpack geckodriver in this directory.
 * Locate your profile path with firefox (this saves your WhatsApp Web session).
     * Three-bars (top right corner) in Firefox
     * Help 
