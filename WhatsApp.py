@@ -15,6 +15,7 @@ import logging
 from selenium.webdriver.remote.remote_connection import LOGGER
 logging.basicConfig(level=logging.INFO)
 
+from tqdm import tqdm
 from time import sleep
 
                       
@@ -216,54 +217,78 @@ class WhatsApp:
 
     def send_message(self, phone_number, message) -> bool:
         """
-        send message "message" to "phone_number"
-        :param phone_number: the phone number to send the message to.
-        :param message: the message to send.
-        :return: True if message send,
-                 False if not send.
+        Send a message to a phone number using WhatsApp Web.
         """
-        print('test1')
-        action = ActionChains(self.driver)
 
-        while True:
-            sb = self.search_bar()
-            if sb is not None:
-                break
-        sb.click()
-        print('test2')
-        try:
-            sb.clear()
-            for i in range(50):
-                action.send_keys(Keys.BACK_SPACE).perform()
-        except selenium.common.exceptions.ElementNotInteractableException:
-            pass
-        for pn in phone_number:
-            sb.send_keys(pn)
-        #sb.send_keys(phone_number)
-        print('test3')
-        sleep(2)
+        steps = [
+            f"Start sending message for {phone_number}",
+            "Waiting for search bar",
+            "Clearing search bar",
+            "Entering phone number",
+            "Checking contact availability",
+            "Waiting for chat box",
+            "Typing message",
+            "Sending message - done ✅"
+        ]
 
-        if self.contact_available():
-            sb.send_keys('\n')
-            logging.info(f'sending message to {phone_number}')
-        else:
-            return False
-        print('test4')
+        with tqdm(total=len(steps), bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]") as pbar:
+            tqdm.write(steps[0])
+            pbar.update(1)
 
-        while True:
-            cb = self.chat_box()
-            if cb is not None:
-                break
-        l = list(filter(lambda x: x != '', message.split('\n')))
-        print('test5')
-        
-        cb.click()
-        for line in l:
-            for c in line:
-                cb.send_keys(c)
-            action.key_down(Keys.SHIFT).key_down(Keys.ENTER).key_up(Keys.SHIFT).key_up(Keys.ENTER).perform()
-        cb.send_keys('\n')
-        cb.send_keys(Keys.RETURN)
+            action = ActionChains(self.driver)
 
-        sleep(0.5)
-        return True
+            while True:
+                sb = self.search_bar()
+                if sb is not None:
+                    break
+            tqdm.write(steps[1])
+            pbar.update(1)
+            sb.click()
+
+            try:
+                sb.clear()
+                for _ in range(50):
+                    action.send_keys(Keys.BACK_SPACE).perform()
+            except selenium.common.exceptions.ElementNotInteractableException:
+                pass
+            tqdm.write(steps[2])
+            pbar.update(1)
+
+            for pn in phone_number:
+                sb.send_keys(pn)
+            sleep(2)
+            tqdm.write(steps[3])
+            pbar.update(1)
+
+            if self.contact_available():
+                sb.send_keys('\n')
+                tqdm.write(f"sending message to {phone_number}")
+            else:
+                tqdm.write(f"Contact not found for {phone_number} – skipping")
+                return False
+            pbar.update(1)
+
+            while True:
+                cb = self.chat_box()
+                if cb is not None:
+                    break
+            tqdm.write(steps[5])
+            pbar.update(1)
+
+            l = list(filter(lambda x: x != '', message.split('\n')))
+            cb.click()
+            for line in l:
+                for c in line:
+                    cb.send_keys(c)
+                action.key_down(Keys.SHIFT).key_down(Keys.ENTER).key_up(Keys.SHIFT).key_up(Keys.ENTER).perform()
+            tqdm.write(steps[6])
+            pbar.update(1)
+
+            cb.send_keys('\n')
+            cb.send_keys(Keys.RETURN)
+            sleep(0.5)
+            tqdm.write(steps[7])
+            pbar.update(1)
+
+            return True
+
