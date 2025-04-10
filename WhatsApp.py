@@ -7,6 +7,9 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.firefox.service import Service
 from webdriver_manager.firefox import GeckoDriverManager
 from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 import logging
 from selenium.webdriver.remote.remote_connection import LOGGER
@@ -14,11 +17,100 @@ logging.basicConfig(level=logging.INFO)
 
 from time import sleep
 
-
-XPATH_search_bar = """/html/body/div[1]/div/div/div[3]/div/div[3]/div/div[1]/div/div[2]/div[2]/div/div"""      
+                      
+XPATH_search_bar = """/html/body/div[1]/div/div/div[3]/div/div[3]/div/div[1]/div/div[2]/div/div/div"""      
 #XPATH_chat_box   = """/html/body/div[1]/div/div/div[2]/div[4]/div/footer/div[1]/div/span[2]/div/div[2]/div[1]/div[2]/div[1]"""
 XPATH_chat_box   = """/html/body/div[1]/div/div/div[3]/div/div[4]/div/footer/div[1]/div/span/div/div[2]/div[1]/div[2]/div[1]"""
-XPATH_contact    = """/html/body/div[1]/div/div/div[3]/div/div[3]/div/div[3]/div[1]/div/div/div"""                   
+XPATH_contact    = """/html/body/div[1]/div/div/div[3]/div/div[3]/div/div[3]/div[1]/div/div/div"""    
+
+
+def find_elements_by_text(driver, tag_name, text, timeout=10):
+    """
+    Searches for elements by their text content.
+
+    Parameters:
+    - driver: Selenium WebDriver instance.
+    - tag_name: HTML tag to search for (e.g., 'div', 'p').
+    - text: The exact text to match within the element.
+    - timeout: Maximum time to wait for the element to appear (default is 10 seconds).
+
+    Returns:
+    - A list of matching WebElement objects, or an empty list if none are found.
+    """
+    try:
+        xpath = f"//{tag_name}[contains(text(), '{text}')]"
+        WebDriverWait(driver, timeout).until(EC.presence_of_element_located((By.XPATH, xpath)))
+        return driver.find_elements(By.XPATH, xpath)
+    except Exception as e:
+        print(f"Error finding elements with text '{text}': {e}")
+        return []
+
+"""# Example Usage
+# Assuming `driver` is your Selenium WebDriver instance
+# Example for "Suchen" button
+suchen_elements = find_elements_by_text(driver, "div", "Suchen")
+
+# Example for "Gib eine Nachricht ein."
+message_box_elements = find_elements_by_text(driver, "div", "Gib eine Nachricht ein.")
+
+# If you expect only one element, you can access it like:
+if message_box_elements:
+    message_box = message_box_elements[0]
+    print("Found message box:", message_box.text)"""
+
+
+def find_elements_by_text_with_xpath(driver, tag_name, text, timeout=10):
+    """
+    Searches for elements by their text content and returns the elements with their XPath.
+
+    Parameters:
+    - driver: Selenium WebDriver instance.
+    - tag_name: HTML tag to search for (e.g., 'div', 'p').
+    - text: The exact text to match within the element.
+    - timeout: Maximum time to wait for the element to appear (default is 10 seconds).
+
+    Returns:
+    - A list of tuples, each containing the WebElement and its calculated XPath.
+    """
+    def get_xpath(element):
+        """
+        Generates the XPath for a WebElement by traversing up the DOM tree.
+        """
+        components = []
+        child = element
+        while child is not None:
+            parent = child.find_element(By.XPATH, "..")
+            siblings = parent.find_elements(By.XPATH, f"./{child.tag_name}")
+            index = siblings.index(child) + 1
+            components.append(f"{child.tag_name}[{index}]")
+            child = parent if parent.tag_name != "html" else None
+        components.reverse()
+        return "/" + "/".join(components)
+
+    try:
+        xpath = f"//{tag_name}[contains(text(), '{text}')]"
+        WebDriverWait(driver, timeout).until(EC.presence_of_element_located((By.XPATH, xpath)))
+        elements = driver.find_elements(By.XPATH, xpath)
+
+        # Generate XPath for each found element
+        result = []
+        for element in elements:
+            calculated_xpath = get_xpath(element)
+            result.append((element, calculated_xpath))
+        
+        return result
+    except Exception as e:
+        print(f"Error finding elements with text '{text}': {e}")
+        return []
+"""
+# Example Usage
+# Assuming `driver` is your Selenium WebDriver instance
+found_elements = find_elements_by_text_with_xpath(driver, "div", "Suchen")
+
+for element, xpath in found_elements:
+    print("Element Text:", element.text)
+    print("Generated XPath:", xpath)"""
+
 
 
 class WhatsApp:
@@ -130,7 +222,7 @@ class WhatsApp:
         :return: True if message send,
                  False if not send.
         """
-
+        print('test1')
         action = ActionChains(self.driver)
 
         while True:
@@ -138,6 +230,7 @@ class WhatsApp:
             if sb is not None:
                 break
         sb.click()
+        print('test2')
         try:
             sb.clear()
             for i in range(50):
@@ -147,6 +240,7 @@ class WhatsApp:
         for pn in phone_number:
             sb.send_keys(pn)
         #sb.send_keys(phone_number)
+        print('test3')
         sleep(2)
 
         if self.contact_available():
@@ -154,13 +248,14 @@ class WhatsApp:
             logging.info(f'sending message to {phone_number}')
         else:
             return False
+        print('test4')
 
         while True:
             cb = self.chat_box()
             if cb is not None:
                 break
         l = list(filter(lambda x: x != '', message.split('\n')))
-        
+        print('test5')
         
         cb.click()
         for line in l:
