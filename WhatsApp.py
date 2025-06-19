@@ -20,8 +20,7 @@ from time import sleep
 
                       
 XPATH_search_bar = """/html/body/div[1]/div/div/div[3]/div/div[3]/div/div[1]/div/div[2]/div/div/div"""      
-#XPATH_chat_box   = """/html/body/div[1]/div/div/div[2]/div[4]/div/footer/div[1]/div/span[2]/div/div[2]/div[1]/div[2]/div[1]"""
-XPATH_chat_box   = """/html/body/div[1]/div/div/div[3]/div/div[4]/div/footer/div[1]/div/span/div/div[2]/div[1]/div[2]/div[1]"""
+XPATH_chat_box   = """/html/body/div[1]/div/div/div[3]/div/div[4]/div/footer/div[1]/div/span/div/div[2]/div/div[3]/div[1]"""
 XPATH_contact    = """/html/body/div[1]/div/div/div[3]/div/div[3]/div/div[3]/div[1]/div/div/div"""    
 
 
@@ -210,7 +209,7 @@ class WhatsApp:
                 obj = self.driver.find_element("xpath", XPATH_contact + f"[{i}]")
             except selenium.common.exceptions.NoSuchElementException:
                 continue
-            if 'transform: translateY(72px)' in obj.get_attribute('style'):
+            if 'transform: translateY(76px)' in obj.get_attribute('style'):
                 obj.click()
                 return True
         return False
