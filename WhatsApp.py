@@ -267,15 +267,20 @@ class WhatsApp:
                 return False
             pbar.update(1)
 
-            while True:
-                cb = self.chat_box()
-                if cb is not None:
-                    break
+            cb = WebDriverWait(self.driver, 20).until(
+                EC.element_to_be_clickable((By.XPATH, XPATH_chat_box))
+            )
+            cb.click()
+
             tqdm.write(steps[5])
             pbar.update(1)
 
+            sleep(1)
+
+            cb = WebDriverWait(self.driver, 20).until(
+                EC.element_to_be_clickable((By.XPATH, XPATH_chat_box))
+            )
             l = list(filter(lambda x: x != '', message.split('\n')))
-            cb.click()
             for line in l:
                 for c in line:
                     cb.send_keys(c)
