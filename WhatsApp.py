@@ -19,9 +19,9 @@ from tqdm import tqdm
 from time import sleep
 
                       
-XPATH_search_bar = """/html/body/div[1]/div/div/div[3]/div/div[3]/div/div[1]/div/div[2]/div/div/div"""      
-XPATH_chat_box   = """/html/body/div[1]/div/div/div[3]/div/div[4]/div/footer/div[1]/div/span/div/div[2]/div/div[3]/div[1]"""
-XPATH_contact    = """/html/body/div[1]/div/div/div[3]/div/div[3]/div/div[3]/div[1]/div/div/div"""    
+XPATH_search_bar = """/html/body/div[1]/div/div/div/div/div[3]/div/div[4]/div/div[1]/div/div[2]/div/div/div[1]"""
+XPATH_chat_box   = """/html/body/div[1]/div/div/div/div/div[3]/div/div[5]/div/footer/div[1]/div/span/div/div[2]/div/div[3]/div[1]"""
+XPATH_contact    = """/html/body/div[1]/div/div/div/div/div[3]/div/div[4]/div/div[3]/div[1]/div/div/div"""    
 
 
 def find_elements_by_text(driver, tag_name, text, timeout=10):
@@ -206,6 +206,8 @@ class WhatsApp:
 
         for i in range(15):
             try:
+                print(f'Try {i}')
+                print(XPATH_contact + f"[{i}]")
                 obj = self.driver.find_element("xpath", XPATH_contact + f"[{i}]")
             except selenium.common.exceptions.NoSuchElementException:
                 continue
